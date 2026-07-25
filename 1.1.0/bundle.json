@@ -1,0 +1,18 @@
+{
+  "version": "1.1.0",
+  "kind": "minor",
+  "base": "1.0.0",
+  "intents": [
+    {
+      "id": "v1.1.0-recall-archive-fallback",
+      "type": "skill-enhance",
+      "targets": [
+        "dubleslash-recall"
+      ],
+      "intent": "When the first keyword pass over the notes is thin, recall should also scan the archive before concluding a fact isn't in memory.",
+      "apply": "In the layered-search step of the dubleslash-recall skill, add archive as an explicit last-resort layer. Preserve any wording the user has already customized; only add the behavior if absent.",
+      "verify": "The skill text mentions searching the archive as a fallback when earlier layers are thin."
+    }
+  ],
+  "sig": "nkJxh7lT4KYmsLDw4kBZomWISjBH2nnVXRWtBFvfCHmobLoJu3PkHOFTNCps9td9oScKKViiv/odyBIu93hFDw=="
+}
