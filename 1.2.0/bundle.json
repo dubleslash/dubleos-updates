@@ -1,0 +1,46 @@
+{
+  "version": "1.2.0",
+  "kind": "minor",
+  "base": "1.1.0",
+  "intents": [
+    {
+      "id": "v1.2.0-memory-split-conventions",
+      "type": "doc-refresh",
+      "targets": [
+        "00-09-system/03-conventions.md",
+        "00-09-system/00-index.md",
+        "AGENTS.md"
+      ],
+      "intent": "Live context is split by scope: 01-hot.md is a cross-project spine with a hard 2,500-character body budget carrying one line per project plus cross-project decisions, while each project's live state lives in its own 00-brief.md under a '## Now' section (state / next / open gates, 1,200 characters) that is rewritten in place — the dated decision lines below it keep the history. The reason, worth stating: a session then pays context only for the project it actually opens, so the auto-loaded cache stays flat no matter how many projects pile up.",
+      "apply": "In 03-conventions.md, add this split to the 'Memory routing' section as its own bullet, and extend the 'Read order' step 3 to say the brief's '## Now' section is that project's live state. In 00-index.md, update the 01-hot line in 'System files' to describe it as the spine plus a pointer to '## Now'. In AGENTS.md, do the same for its numbered read list and the project-brief line. Preserve any wording the user has already customized — add the behavior where it is absent, adjust in place where a stale description contradicts it; never rewrite a section wholesale.",
+      "verify": "03-conventions.md describes both the 01-hot character budget and the per-project '## Now' section; 00-index.md and AGENTS.md both point a reader at '## Now' for a project's live state."
+    },
+    {
+      "id": "v1.2.0-memory-split-routing",
+      "type": "skill-enhance",
+      "targets": [
+        "dubleslash-remember",
+        "dubleslash-memory-sync",
+        "dubleslash-session-handoff",
+        "dubleslash-project-new",
+        "dubleslash-migrate"
+      ],
+      "intent": "The skills that write live context route it by scope instead of piling everything into the hot cache. Project-scoped facts refresh that brief's '## Now' section and only touch the hot cache if the project's one-line status changed; cross-project facts get a one-liner in the hot cache under 'Recent cross-project decisions'. memory-sync additionally reports a budget check every run (hot cache body under 2,500 characters, each '## Now' under 1,200), fixing an overflow by tightening prose or demoting detail into the brief body — never by dropping a live gate or warning. project-new's brief template gains the '## Now' section.",
+      "apply": "Add the scope routing to each skill's existing step that writes active context, in that skill's own voice. For dubleslash-project-new, add '## Now' (state / next / open gates) to the 00-brief.md template it emits, and note that this section is rewritten in place while the rest of the brief is append-only. For dubleslash-memory-sync, add the budget check to the distill and index steps. Preserve customizations: add the routing where it is absent rather than replacing steps the user has reworded. IMPORTANT — the user's own 00-09-system/01-hot.md is theirs and this update must not rewrite it. Instead, dubleslash-memory-sync should tidy it on its next run: when the old 'Recent decisions' heading is present, rename it to 'Recent cross-project decisions', and add the heading if neither exists.",
+      "verify": "dubleslash-remember and dubleslash-memory-sync both describe routing project-scoped context to the brief's '## Now' and cross-project context to the hot cache; dubleslash-project-new's brief template contains a '## Now' section; dubleslash-memory-sync mentions the character budgets and the one-time heading tidy."
+    },
+    {
+      "id": "v1.2.0-bottom-line-block",
+      "type": "doc-refresh",
+      "targets": [
+        "CLAUDE.md",
+        "00-09-system/06-usage-guide.md",
+        "00-09-system/03-conventions.md"
+      ],
+      "intent": "Every turn that has anything to report ends with a fixed block, last, after all other text: a horizontal rule, then '**⛳ BOTTOM LINE**', then the lines '✅ Done:' (what actually happened, at most two lines, no jargon), '⚠️ DECIDE:' (only when a decision is needed — the question plus a recommendation), '❓ OPEN:' (unanswered questions, batched, one line each), '▶ NEXT:' (what happens next or what is being waited on), and '📸' (a screenshot or file when the work is visual). Empty sections are omitted; a block with only Done and Next is the normal case. The rules that make it work: a needed decision may never live only in body text, everything above the block is optional reading, questions are batched into it rather than streamed mid-task, visual work ships a screenshot rather than a claim, and no jargon or file paths in the Done line. The point is that nothing important can hide in a wall of text.",
+      "apply": "Add this as a top-level '## Bottom Line — how every turn ends' section in CLAUDE.md, with the block shown in a fenced code example followed by the rules as bullets — written in the user's own first person, since CLAUDE.md is their file. In 06-usage-guide.md, add one bullet under 'Automatic — never ask for these' naming the block and saying it can be copied into the global ~/.claude/CLAUDE.md to apply everywhere, or deleted if unwanted. In 03-conventions.md, add a short 'Reporting — the Bottom Line block' section pointing at CLAUDE.md as the definition. If the user has already written a reporting convention of their own, leave theirs in place and say so in the receipt rather than replacing it.",
+      "verify": "CLAUDE.md contains a Bottom Line section defining the ⛳ block with Done / DECIDE / OPEN / NEXT; the usage guide mentions it and how to opt out."
+    }
+  ],
+  "sig": "q28xiGoLq4MENp6VtKddasfvamBfpmuXmOx6d/cA1k83p4U5FWDr7jmepj27diIw38Bmvf8TCWoBoJnVsIgTCA=="
+}
