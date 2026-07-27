@@ -1,0 +1,25 @@
+{
+  "version": "1.3.0",
+  "kind": "minor",
+  "base": "1.2.0",
+  "intents": [
+    {
+      "id": "v1.3.0-updater-assets-and-walk",
+      "type": "skill-enhance",
+      "targets": [
+        "dubleslash-update"
+      ],
+      "assets": [
+        {
+          "path": ".claude/skills/dubleslash-update/updater-core.mjs",
+          "sha256": "887b9752f1d0bddade020bc47349f6d4ca6ef8a086caad9433a120b2d7069d22",
+          "url": "assets/dubleslash-update/updater-core.mjs"
+        }
+      ],
+      "intent": "The updater gains three things. (1) A new skill can actually be added: the capability envelope used to resolve every target against the owner map that shipped with this copy, which by definition cannot contain a skill an update introduces — so every add was refused as 'unknown target'. Adds are now judged by the reserved dubleslash- namespace instead, still refusing anything user-seeded, anything outside the namespace, and any target dressed up as a path. (2) Updates can carry a file that must arrive byte-exact — an asset, whose sha256 is pinned inside the signed bundle and verified against the fetched bytes before anything is written; assets may only land inside their own skill's folder and may only be fetched from a relative path under the pinned feed, never another host. (3) Versions apply in order: an install that is several editions behind now walks from its installed version up to the latest, applying each bundle in turn, instead of jumping straight to the newest and refusing it.",
+      "apply": "First replace the updater's engine. The file .claude/skills/dubleslash-update/updater-core.mjs is listed as this intent's asset: fetch it from <FEED_URL>/1.3.0/assets/dubleslash-update/updater-core.mjs to a temporary path, then verify it before writing — run `shasum -a 256 <tmpfile>` and compare the result character by character against the sha256 in this intent. If it does not match, or the fetch failed, STOP: skip this intent, change nothing, and report it. Only on an exact match, write the file to .claude/skills/dubleslash-update/updater-core.mjs. Then update this skill's own SKILL.md to document the new behavior: in the section that gets the bundle, say that when the installed version is more than one edition behind, you fetch and fully apply each version's bundle in ascending order (each version's own base tells you the chain) rather than jumping to the latest — and that a version whose bundle is missing from the feed stops the walk there, keeping what was already applied. Add a paragraph documenting assets: an intent may list assets, each with a path, a url relative to that version's folder on the feed, and a sha256; fetch each one, verify it with `node .claude/skills/dubleslash-update/updater-core.mjs verify-asset <tmpfile> <sha256>`, write it only on ok:true, and on any failure skip the whole intent leaving every file untouched. Also document that skill-add creates a skill only if its folder does not already exist — never overwriting one that does — and registers the new skill in 00-09-system/09-skills.md. Preserve the user's own wording throughout; add these where they are absent.",
+      "verify": "updater-core.mjs matched its pinned sha256 and exports verifyAsset (grep for 'export function verifyAsset'); the skill's SKILL.md describes assets, the verify-asset step, and applying versions in ascending order."
+    }
+  ],
+  "sig": "4s2XUmq56kTq2SBexrV9KcpUlZIcfxHdVYbcFRRE6pu+XyrskgQ7X62lMNLIKTbAhnJZqR3otv6yHqivFllNCQ=="
+}

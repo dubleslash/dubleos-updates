@@ -1,0 +1,25 @@
+{
+  "version": "1.4.0",
+  "kind": "minor",
+  "base": "1.3.0",
+  "intents": [
+    {
+      "id": "v1.4.0-fidelity-gate",
+      "type": "skill-add",
+      "targets": [
+        "dubleslash-fidelity-gate"
+      ],
+      "assets": [
+        {
+          "path": ".claude/skills/dubleslash-fidelity-gate/template.html",
+          "sha256": "d00e8aa4c5661095d5bde2d82091c21f860e24a7cc592c2fc3c0f10828aa4ae5",
+          "url": "assets/dubleslash-fidelity-gate/template.html"
+        }
+      ],
+      "intent": "A new skill, dubleslash-fidelity-gate, that turns an agreed plan into a lo-fi clickable wireframe the user walks before anything gets built — pinning what's wrong while changing it is still cheap. Its shape: a routing test (will a human ever SEE a screen, page, panel or interaction this work creates or changes? yes = run the gate, no = skip it and say so in one line); a fidelity law (the wireframe is grayscale, system font, boxes and rules, no brand — because looks-and-feel feedback at this moment crowds out the expensive misunderstandings, which are about flow, logic and content; content must be realistic-shaped, never Lorem ipsum and never 'Item 1'; functions are flow-level only, so buttons navigate and panels open but nothing computes or persists); a wireframe built from the shipped shell by filling only its three slots — feature name, stories, screens — wiring navigation with data-goto, tagging each story's happy path, and including the unhappy screens the plan implies; a walkthrough where Claude hands it over and then goes quiet; triage of every finding into exactly one of plan bug, wireframe bug, change request, or open question, none dropped; and a pass condition — every story walked clean — after which the stories become the acceptance criteria and the build runs to completion without mid-build questions about how it should work.",
+      "apply": "Create .claude/skills/dubleslash-fidelity-gate/ with a SKILL.md whose frontmatter name is dubleslash-fidelity-gate and whose description ends 'Part of the Duble//OS skill set by Duble//Slash.', covering the shape described above in this OS's voice, and a references/walkthrough-protocol.md holding the session runbook: open the wireframe (tell the user the full file path and let them open it in their browser — it is self-contained and needs no server; use a preview or browser tool only if one is actually available), hand it over and go quiet, read the pins (the Copy button's pasted handoff always works; reading window.__fidelity directly only if a browser tool is driving the page), render a findings table with every comment quoted verbatim, triage each one, then re-walk only the stories that changed. The wireframe shell arrives as this intent's asset — fetch it, verify it against its pinned sha256, and write it verbatim to .claude/skills/dubleslash-fidelity-gate/template.html; it is verified machinery, not content to rewrite or regenerate. Then register the skill: a row in 00-09-system/09-skills.md, an entry in CLAUDE.md's skill list, and a row in 06-usage-guide.md's 'Everything else' table for 'wireframe this' / 'show me before you build'. If a .claude/skills/dubleslash-fidelity-gate/ folder already exists, skip this intent entirely and say so.",
+      "verify": ".claude/skills/dubleslash-fidelity-gate/SKILL.md and references/walkthrough-protocol.md both exist; template.html exists and matched its pinned sha256; the skill appears in 09-skills.md and CLAUDE.md."
+    }
+  ],
+  "sig": "HDAI2jDTaVL1tfsNHq3gJUS4YIQ7xaFUHsQYXfgh8x2B6nZTlj0cf5mpn21PjLhU96vQnTl721WQLnWhldZDCQ=="
+}

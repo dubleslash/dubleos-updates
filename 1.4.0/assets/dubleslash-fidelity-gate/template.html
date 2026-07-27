@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- FIDELITY:META — replace the feature name in the <title> below AND in __fidelity.feature -->
+<title>Wireframe — Untitled Feature</title>
+<style>
+  /* ============================================================
+     TWO COLOR SYSTEMS, ON PURPOSE.
+     1. The WIREFRAME (--wf-*) is grayscale. No brand. Judge the bones.
+     2. The FEEDBACK CHROME (--ds-*) uses Duble//Slash DS tokens
+        (packages/tokens/dist/dubleslash/theme.css). The tool is branded;
+        the thing under review is not. Never use --ds-* inside a screen.
+     ============================================================ */
+  :root{
+    /* --- wireframe: grayscale only --- */
+    --wf-paper:#ffffff; --wf-ink:#1a1a1a; --wf-ink-soft:#666666; --wf-ink-faint:#999999;
+    --wf-line:#d4d4d4; --wf-line-soft:#ebebeb; --wf-fill:#f4f4f4; --wf-fill-2:#e9e9e9;
+
+    /* --- Duble//Slash DS (light) — feedback chrome only --- */
+    --ds-background:#ffffff;
+    --ds-foreground:#0c0a09;
+    --ds-muted:#f5f5f4;
+    --ds-muted-foreground:#57534e;
+    --ds-primary:#1c1917;
+    --ds-primary-foreground:#fafaf9;
+    --ds-primary-hover:#0f766e;
+    --ds-accent:#f0fdfa;
+    --ds-accent-foreground:#042f2e;
+    --ds-border:#e7e5e4;
+    --ds-ring:#5eead4;
+    --ds-destructive:#dc2626;
+    --ds-radius:0.5rem;
+
+    --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --bar-h:56px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font);color:var(--wf-ink);background:var(--wf-paper);
+       font-size:14px;line-height:1.5;padding-top:var(--bar-h)}
+
+  /* ---- wireframe primitives: everything a screen needs, grayscale only ---- */
+  .wf-box{border:1px solid var(--wf-line);background:var(--wf-fill);border-radius:4px}
+  .wf-btn{border:1px solid var(--wf-ink);background:var(--wf-paper);color:var(--wf-ink);
+          border-radius:4px;padding:8px 14px;font:inherit;cursor:pointer}
+  .wf-btn--primary{background:var(--wf-ink);color:var(--wf-paper)}
+  .wf-btn--ghost{border-color:var(--wf-line);color:var(--wf-ink-soft)}
+  .wf-input{border:1px solid var(--wf-line);background:var(--wf-paper);border-radius:4px;
+            padding:8px 10px;font:inherit;width:100%}
+  .wf-label{font-size:12px;color:var(--wf-ink-soft);text-transform:uppercase;letter-spacing:.04em}
+  .wf-img{background:repeating-linear-gradient(45deg,var(--wf-fill),var(--wf-fill) 8px,var(--wf-fill-2) 8px,var(--wf-fill-2) 16px);
+          border:1px solid var(--wf-line);border-radius:4px;display:grid;place-items:center;
+          color:var(--wf-ink-faint);font-size:12px;min-height:96px}
+  .wf-row{display:flex;gap:12px;align-items:center}
+  .wf-col{display:flex;flex-direction:column;gap:12px}
+  .wf-card{border:1px solid var(--wf-line);border-radius:6px;padding:16px;background:var(--wf-paper)}
+  .wf-table{width:100%;border-collapse:collapse}
+  .wf-table th,.wf-table td{border-bottom:1px solid var(--wf-line-soft);padding:8px 6px;text-align:left}
+  .wf-table th{font-size:12px;color:var(--wf-ink-soft);font-weight:600}
+  .wf-page{max-width:960px;margin:0 auto;padding:24px 20px 120px}
+  .wf-muted{color:var(--wf-ink-soft)}
+  .wf-faint{color:var(--wf-ink-faint)}
+  h1,h2,h3{font-weight:600;margin:0}
+  h1{font-size:22px} h2{font:inherit;font-size:17px;font-weight:600} h3{font-size:15px}
+
+  /* ---- screen router ---- */
+  .screen{display:none}
+  .screen.is-active{display:block}
+
+  /* ================= FEEDBACK CHROME (Duble//Slash DS) ================= */
+  /* Grid, not a single scroller: the story chips scroll, the actions never move.
+     The CTA must always be on screen — it is the whole point of the walkthrough. */
+  #fidelity-bar{position:fixed;top:0;left:0;right:0;height:var(--bar-h);
+    background:var(--ds-background);color:var(--ds-foreground);
+    border-bottom:1px solid var(--ds-border);
+    display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;
+    padding:0 12px;z-index:70;white-space:nowrap}
+  #fidelity-bar .brandless{font-size:11px;color:var(--ds-muted-foreground);letter-spacing:.08em;
+    text-transform:uppercase;padding-right:4px}
+  #story-chips{display:flex;gap:6px;align-items:center;overflow-x:auto;min-width:0;
+    scrollbar-width:thin;padding:2px 0}
+  .bar-actions{display:flex;gap:6px;align-items:center}
+  .story-chip{border:1px solid var(--ds-border);background:var(--ds-background);
+    color:var(--ds-foreground);border-radius:999px;
+    padding:5px 12px;font:inherit;font-size:13px;cursor:pointer;flex:0 0 auto}
+  .story-chip:hover{border-color:var(--ds-primary-hover)}
+  .story-chip.is-active{background:var(--ds-accent);color:var(--ds-accent-foreground);
+    border-color:var(--ds-primary-hover);font-weight:600}
+  .story-chip[data-state="walked"]::before{content:"\2705 "}
+  .story-chip[data-state="findings"]::before{content:"\1F4CC "}
+  .story-chip[data-state="not-walked"]::before{content:"\2B1C "}
+  #fidelity-bar .spacer{flex:1 1 auto;min-width:8px}
+  .bar-btn{border:1px solid var(--ds-border);background:var(--ds-background);
+    color:var(--ds-foreground);border-radius:var(--ds-radius);
+    padding:7px 11px;font:inherit;font-size:13px;cursor:pointer;flex:0 0 auto}
+  .bar-btn:hover{border-color:var(--ds-primary-hover);color:var(--ds-primary-hover)}
+  .bar-btn.is-on{background:var(--ds-primary-hover);color:#fff;border-color:var(--ds-primary-hover)}
+  .bar-btn:focus-visible{outline:2px solid var(--ds-ring);outline-offset:1px}
+  /* the one primary action: hand the findings to the session */
+  .bar-btn--cta{background:var(--ds-primary);color:var(--ds-primary-foreground);
+    border-color:var(--ds-primary);font-weight:600}
+  .bar-btn--cta:hover{background:var(--ds-primary-hover);border-color:var(--ds-primary-hover);
+    color:#fff}
+  .bar-btn--cta[data-copied="1"]{background:var(--ds-accent);color:var(--ds-accent-foreground);
+    border-color:var(--ds-primary-hover)}
+  .bar-btn--cta[disabled]{opacity:.45;cursor:not-allowed}
+  .goal{position:fixed;top:var(--bar-h);left:0;right:0;background:var(--ds-muted);
+    border-bottom:1px solid var(--ds-border);padding:8px 14px;font-size:13px;
+    color:var(--ds-muted-foreground);z-index:65}
+  .is-on-path{outline:1px solid var(--ds-primary-hover);outline-offset:2px}
+
+  /* ---- pins ---- */
+  .pin{position:absolute;width:22px;height:22px;border-radius:50%;
+       background:var(--ds-primary-hover);
+       color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center;
+       transform:translate(-50%,-50%);cursor:pointer;z-index:40;
+       box-shadow:0 0 0 2px #fff, 0 1px 4px rgba(0,0,0,.3)}
+  .pin-layer{position:absolute;inset:0;pointer-events:none;z-index:39}
+  .pin-layer .pin{pointer-events:auto}
+  body.pinning{cursor:crosshair}
+  body.pinning .screen *{cursor:crosshair !important}
+  .pin-target{outline:2px dashed var(--ds-primary-hover) !important;outline-offset:2px}
+
+  .drawer{position:fixed;left:0;right:0;bottom:0;background:var(--ds-background);
+          color:var(--ds-foreground);
+          border-top:1px solid var(--ds-border);box-shadow:0 -4px 24px rgba(12,10,9,.14);
+          padding:16px;z-index:80;transform:translateY(110%);transition:transform .18s ease}
+  .drawer.is-open{transform:translateY(0)}
+  .drawer__inner{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+  .drawer__ctx{font-size:11px;color:var(--ds-muted-foreground);text-transform:uppercase;
+    letter-spacing:.08em}
+  .drawer__path{font-size:12px;color:var(--ds-muted-foreground);
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    background:var(--ds-muted);border:1px solid var(--ds-border);
+    border-radius:var(--ds-radius);padding:6px 8px;overflow:auto;white-space:nowrap}
+  .ds-input{border:1px solid var(--ds-border);background:var(--ds-background);
+    color:var(--ds-foreground);border-radius:var(--ds-radius);
+    padding:9px 11px;font:inherit;width:100%;resize:vertical}
+  .ds-input:focus-visible{outline:2px solid var(--ds-ring);outline-offset:1px;
+    border-color:var(--ds-primary-hover)}
+  .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .tag{border:1px solid var(--ds-border);background:var(--ds-background);
+    color:var(--ds-foreground);border-radius:999px;
+    padding:5px 12px;font-size:13px;cursor:pointer;font:inherit}
+  .tag:hover{border-color:var(--ds-primary-hover)}
+  .tag.is-on{background:var(--ds-primary-hover);color:#fff;border-color:var(--ds-primary-hover)}
+  .ds-btn{border:1px solid var(--ds-border);background:var(--ds-background);
+    color:var(--ds-foreground);border-radius:var(--ds-radius);padding:8px 14px;
+    font:inherit;cursor:pointer}
+  .ds-btn:hover{border-color:var(--ds-primary-hover);color:var(--ds-primary-hover)}
+  .ds-btn--primary{background:var(--ds-primary);color:var(--ds-primary-foreground);
+    border-color:var(--ds-primary);font-weight:600}
+  .ds-btn--primary:hover{background:var(--ds-primary-hover);border-color:var(--ds-primary-hover);
+    color:#fff}
+
+  .pinlist{position:fixed;right:0;top:var(--bar-h);bottom:0;width:340px;
+           background:var(--ds-background);color:var(--ds-foreground);
+           border-left:1px solid var(--ds-border);overflow:auto;z-index:75;padding:14px;
+           transform:translateX(110%);transition:transform .18s ease}
+  .pinlist.is-open{transform:translateX(0)}
+  .pinlist__head{font-size:11px;color:var(--ds-muted-foreground);text-transform:uppercase;
+    letter-spacing:.08em;margin-bottom:10px}
+  .pinlist__item{border-bottom:1px solid var(--ds-border);padding:10px 0;cursor:pointer;font-size:13px}
+  .pinlist__item:hover{background:var(--ds-accent)}
+  .pinlist__n{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;
+              background:var(--ds-primary-hover);color:#fff;font-size:11px;font-weight:700;
+              margin-right:6px}
+  .pinlist__meta{color:var(--ds-muted-foreground);margin-top:3px;font-size:12px}
+  .pinlist__del{border:1px solid var(--ds-border);background:var(--ds-background);
+    color:var(--ds-muted-foreground);border-radius:999px;padding:0 7px;line-height:1.5;
+    font:inherit;font-size:13px;cursor:pointer;float:right}
+  .pinlist__del:hover{border-color:var(--ds-destructive);color:var(--ds-destructive)}
+  .pinlist__empty{color:var(--ds-muted-foreground)}
+  .panel-tabs{display:flex;gap:6px;align-items:center;margin-bottom:12px}
+
+  /* the paste-handoff sheet: shown when the clipboard API is unavailable */
+  .handoff{position:fixed;inset:0;background:rgba(12,10,9,.45);z-index:90;display:none;
+    padding:24px;overflow:auto}
+  .handoff.is-open{display:block}
+  .handoff__card{max-width:760px;margin:0 auto;background:var(--ds-background);
+    border:1px solid var(--ds-border);border-radius:var(--ds-radius);padding:18px;
+    display:flex;flex-direction:column;gap:12px}
+  .handoff__pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;
+    background:var(--ds-muted);border:1px solid var(--ds-border);border-radius:var(--ds-radius);
+    padding:12px;max-height:50vh;overflow:auto;white-space:pre-wrap;width:100%}
+
+  /* Narrow viewports: shed labels, never the CTA. Walking on a phone must still end
+     in one tap that hands the findings over. */
+  @media (max-width:900px){
+    #fidelity-bar .brandless{display:none}
+    #fidelity-bar{grid-template-columns:minmax(0,1fr) auto}
+  }
+  @media (max-width:640px){
+    .pinlist{width:100%}
+    .goal{font-size:12px}
+    #btn-done .lbl{display:none}
+    #btn-copy .lbl{display:none}
+    #btn-pin .lbl{display:none}
+    .bar-btn{padding:7px 9px}
+  }
+  @media (prefers-color-scheme: dark){
+    /* DS dark mode — chrome only; the wireframe stays light so it reads as paper */
+    :root{
+      --ds-background:#0c0a09; --ds-foreground:#fafaf9;
+      --ds-muted:#1c1917; --ds-muted-foreground:#d6d3d1;
+      --ds-primary:#f5f5f4; --ds-primary-foreground:#0c0a09;
+      --ds-accent:#042f2e; --ds-accent-foreground:#ccfbf1;
+      --ds-border:#44403c; --ds-ring:#0f766e;
+    }
+  }
+</style>
+</head>
+<body data-screen="">
+
+<div id="fidelity-bar">
+  <span class="brandless">Duble//Slash · Wireframe</span>
+  <span id="story-chips"></span>
+  <span class="bar-actions">
+    <button class="bar-btn" id="btn-pin" type="button">&#128204; <span class="lbl">Pin mode</span></button>
+    <button class="bar-btn" id="btn-pins" type="button">Pins (0)</button>
+    <button class="bar-btn" id="btn-done" type="button">&#10003; <span class="lbl">Story done</span></button>
+    <button class="bar-btn bar-btn--cta" id="btn-copy" type="button" disabled>
+      &#128203; <span class="lbl">Copy feedback for Claude</span>
+    </button>
+  </span>
+</div>
+<div class="goal" id="goal" style="display:none"></div>
+
+<div class="pinlist" id="pinlist" aria-label="All pins"></div>
+
+<div class="drawer" id="drawer" role="dialog" aria-label="Add a note">
+  <div class="drawer__inner">
+    <div class="drawer__ctx" id="drawer-ctx">Pin</div>
+    <div class="drawer__path" id="drawer-path"></div>
+    <div class="tags" id="drawer-tags"></div>
+    <textarea class="ds-input" id="drawer-comment" rows="3"
+      placeholder="What's wrong, missing, or should change here? (a change request is fine — &quot;make this a dropdown&quot;)"></textarea>
+    <div class="wf-row" style="justify-content:flex-end">
+      <button class="ds-btn" id="drawer-cancel" type="button">Cancel</button>
+      <button class="ds-btn ds-btn--primary" id="drawer-save" type="button">Save note</button>
+    </div>
+  </div>
+</div>
+
+<div class="handoff" id="handoff">
+  <div class="handoff__card">
+    <div class="drawer__ctx">Feedback for Claude — select all and copy</div>
+    <textarea class="handoff__pre" id="handoff-text" rows="18" readonly></textarea>
+    <div class="wf-row" style="justify-content:flex-end">
+      <button class="ds-btn" id="handoff-close" type="button">Close</button>
+      <button class="ds-btn ds-btn--primary" id="handoff-select" type="button">Select all</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SCREENS (the skill fills this) ============ -->
+<!-- FIDELITY:SCREENS -->
+<section class="screen" data-screen="start" data-screen-title="Start">
+  <div class="wf-page"><h1>Replace me</h1></div>
+</section>
+
+<!-- ============ STORY DATA (the skill fills this) ============ -->
+<script>
+window.__fidelity = {
+  feature: "Untitled Feature",
+  stories: [ /* FIDELITY:STORIES */
+    {id:"1", title:"Sample story", goal:"Replace these stories with real ones from the spec.", screens:["start"]}
+  ],
+  screens: [],
+  pins: [],
+  nextId: 1
+};
+</script>
+
+<script>
+/* ---- screen router ---- */
+(function(){
+  var F = window.__fidelity;
+
+  F.screens = Array.prototype.map.call(
+    document.querySelectorAll('.screen'),
+    function(el){ return { id: el.dataset.screen, title: el.dataset.screenTitle || el.dataset.screen }; }
+  );
+
+  window.showScreen = function(screenId){
+    var target = document.querySelector('.screen[data-screen="'+screenId+'"]');
+    if(!target) return null;
+    Array.prototype.forEach.call(document.querySelectorAll('.screen'), function(el){
+      el.classList.toggle('is-active', el === target);
+    });
+    document.body.dataset.screen = screenId;
+    window.scrollTo(0,0);
+    document.dispatchEvent(new CustomEvent('fidelity:screen', {detail:{screen:screenId}}));
+    return screenId;
+  };
+
+  /* Any element with data-goto navigates. The ONLY navigation mechanism. */
+  document.addEventListener('click', function(e){
+    if(document.body.classList.contains('pinning')) return;
+    var nav = e.target.closest('[data-goto]');
+    if(nav){ e.preventDefault(); window.showScreen(nav.dataset.goto); }
+  });
+
+  if(F.screens.length) window.showScreen(F.screens[0].id);
+})();
+</script>
+
+<script>
+/* ---- annotation layer ---- */
+(function(){
+  var F = window.__fidelity;
+  var TAGS = ['wrong','missing','question','change','nice'];
+  var slug = (F.feature||'wireframe').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  var KEY = 'fidelity:' + slug;
+  window.__fidelityKey = KEY;
+  var pending = null, chosenTag = 'wrong';
+
+  function save(){
+    try{ localStorage.setItem(KEY, JSON.stringify({pins:F.pins, stories:F.stories, nextId:F.nextId})); }catch(e){}
+  }
+  window.__fidelitySave = save;
+
+  function load(){
+    try{
+      var raw = localStorage.getItem(KEY); if(!raw) return;
+      var d = JSON.parse(raw);
+      if(Array.isArray(d.pins)) F.pins = d.pins;
+      if(d.nextId) F.nextId = d.nextId;
+      if(Array.isArray(d.stories) && d.stories.length === F.stories.length){
+        d.stories.forEach(function(s,i){ if(s && s.state) F.stories[i].state = s.state; });
+      }
+    }catch(e){}
+  }
+
+  /* Stable selector, always anchored to its screen so it can never match another one.
+     Walks up to the .screen ancestor (no depth cap — the cap silently dropped the
+     anchor and made deep selectors ambiguous across screens). */
+  window.selectorFor = function(el){
+    if(!el || el === document.body) return 'body';
+    if(el.id) return '#' + el.id;
+    var parts = [], node = el;
+    while(node && node !== document.body){
+      if(node.classList && node.classList.contains('screen')){
+        parts.unshift('.screen[data-screen="' + node.dataset.screen + '"]');
+        break;
+      }
+      var tag = node.tagName.toLowerCase();
+      var parent = node.parentNode;
+      if(parent && parent.children){
+        var sibs = Array.prototype.filter.call(parent.children, function(c){
+          return c.tagName === node.tagName;
+        });
+        if(sibs.length === 1){ parts.unshift(tag); node = parent; continue; }
+        parts.unshift(tag + ':nth-of-type(' + (sibs.indexOf(node) + 1) + ')');
+      } else {
+        parts.unshift(tag);
+      }
+      node = parent;
+    }
+    return parts.join(' > ');
+  };
+
+  /* ---- code context: what a session needs to find this element in the source ---- */
+
+  /* human-readable ancestor trail, e.g. "Quote detail › Line items › row 2 › Unit" */
+  window.trailFor = function(el){
+    var trail = [], node = el, depth = 0;
+    while(node && node !== document.body && depth < 8){
+      var bit = null;
+      if(node.classList && node.classList.contains('screen')){
+        bit = node.dataset.screenTitle || node.dataset.screen;
+      } else if(node.tagName === 'TR'){
+        var tb = node.parentNode;
+        var rows = tb ? Array.prototype.filter.call(tb.children, function(c){ return c.tagName==='TR'; }) : [];
+        bit = 'row ' + (rows.indexOf(node) + 1);
+      } else if(node.tagName === 'TD' || node.tagName === 'TH'){
+        var tr = node.parentNode;
+        var cells = tr ? Array.prototype.filter.call(tr.children, function(c){
+          return c.tagName==='TD'||c.tagName==='TH'; }) : [];
+        var i = cells.indexOf(node);
+        var table = node.closest('table');
+        var head = table ? table.querySelectorAll('thead th')[i] : null;
+        bit = head ? (head.innerText||'').trim() : ('col ' + (i+1));
+      } else if(node.classList && node.classList.contains('wf-card')){
+        var lbl = node.querySelector('.wf-label');
+        bit = lbl ? (lbl.innerText||'').trim() : 'card';
+      } else if(/^H[1-3]$/.test(node.tagName)){
+        bit = (node.innerText||'').trim().slice(0,32);
+      }
+      if(bit) trail.unshift(bit);
+      node = node.parentNode; depth++;
+    }
+    return trail.join(' › ');
+  };
+
+  /* The element's own markup, trimmed — this is what makes a finding greppable in the
+     source file. Runtime-only classes are stripped: they are added by this shell at
+     walk time and would never match the file on disk. */
+  var RUNTIME_CLASSES = ['is-on-path','pin-target','is-active'];
+  window.markupFor = function(el){
+    var clone = el.cloneNode(true);
+    var scrub = function(node){
+      if(node.nodeType !== 1) return;
+      if(node.classList){
+        RUNTIME_CLASSES.forEach(function(c){ node.classList.remove(c); });
+        if(!node.classList.length) node.removeAttribute('class');
+      }
+      Array.prototype.forEach.call(node.children, scrub);
+    };
+    scrub(clone);
+    Array.prototype.forEach.call(clone.querySelectorAll('.pin-layer'), function(n){ n.remove(); });
+    var html = (clone.outerHTML || '').replace(/\s+/g, ' ').trim();
+    return html.length > 260 ? html.slice(0, 260) + '…' : html;
+  };
+
+  function currentStory(){
+    var s = F.stories.filter(function(x){ return x.active; })[0];
+    return s ? s.id : null;
+  }
+
+  window.addPin = function(el, tag, comment){
+    /* Monotonic: never reuse an id, even after a delete — a findings file may already cite it. */
+    var maxId = F.pins.reduce(function(m,p){ return p.id > m ? p.id : m; }, 0);
+    F.nextId = Math.max(F.nextId || 1, maxId + 1);
+    var pin = {
+      id: F.nextId++,
+      screen: document.body.dataset.screen || null,
+      screenTitle: (function(){
+        var s = F.screens.filter(function(x){ return x.id === document.body.dataset.screen; })[0];
+        return s ? s.title : null;
+      })(),
+      story: currentStory(),
+      selector: window.selectorFor(el),
+      trail: window.trailFor(el),
+      markup: window.markupFor(el),
+      label: (el.innerText || el.getAttribute('placeholder') || el.tagName || '').trim().slice(0,60),
+      tag: tag,
+      comment: comment || '',
+      ts: Date.now()
+    };
+    F.pins.push(pin);
+    save(); renderPins(); renderPinList(); refreshCopyBtn();
+    document.dispatchEvent(new CustomEvent('fidelity:pin', {detail:pin}));
+    return pin;
+  };
+
+  /* ---- the handoff: a paste-ready brief, not raw JSON ---- */
+  window.buildHandoff = function(){
+    var file = decodeURIComponent(location.pathname);
+    var L = [];
+    L.push('## Wireframe feedback — ' + F.feature);
+    L.push('');
+    L.push('Wireframe: `' + file + '`');
+    L.push('Pins: ' + F.pins.length);
+    L.push('');
+    L.push('Story states:');
+    F.stories.forEach(function(s){
+      L.push('- ' + s.id + '. ' + s.title + ' — **' + (s.state||'not-walked') + '**');
+    });
+    L.push('');
+    if(!F.pins.length){
+      L.push('_No pins. Walked clean._');
+    } else {
+      L.push('### Findings');
+      F.pins.slice().sort(function(a,b){ return a.id - b.id; }).forEach(function(p){
+        L.push('');
+        L.push('**Pin ' + p.id + ' · `' + p.tag + '`** — ' + (p.comment || '_(no comment)_'));
+        L.push('- Screen: ' + (p.screenTitle || p.screen) + ' (`data-screen="' + p.screen + '"`)' +
+               (p.story ? ' · Story ' + p.story : ''));
+        if(p.trail) L.push('- Where: ' + p.trail);
+        L.push('- Selector: `' + p.selector + '`');
+        if(p.markup) L.push('- Markup: `' + p.markup.replace(/`/g,'‘') + '`');
+      });
+      L.push('');
+      L.push('---');
+      L.push('Triage each finding (spec bug · wireframe bug · change request · open question),');
+      L.push('apply the fixes, then tell me which stories changed so I re-walk only those.');
+    }
+    return L.join('\n');
+  };
+
+  /* kept for machine reads: JSON.stringify(window.__fidelity) is the canonical channel */
+  window.exportFindings = function(){
+    return JSON.stringify({feature:F.feature, stories:F.stories, pins:F.pins}, null, 2);
+  };
+
+  function refreshCopyBtn(){
+    var b = document.getElementById('btn-copy');
+    if(!b) return;
+    b.disabled = F.pins.length === 0;
+    b.removeAttribute('data-copied');
+    b.innerHTML = '&#128203; <span class="lbl">Copy feedback for Claude' +
+      (F.pins.length ? ' (' + F.pins.length + ')' : '') + '</span>';
+  }
+  window.__refreshCopyBtn = refreshCopyBtn;
+
+  function renderPins(){
+    Array.prototype.forEach.call(document.querySelectorAll('.pin-layer'), function(l){ l.remove(); });
+    var active = document.querySelector('.screen.is-active');
+    if(!active) return;
+    if(getComputedStyle(active).position === 'static') active.style.position = 'relative';
+    var layer = document.createElement('div');
+    layer.className = 'pin-layer';
+    var aRect = active.getBoundingClientRect();
+    F.pins.filter(function(p){ return p.screen === document.body.dataset.screen; })
+      .forEach(function(p){
+        var el = null;
+        try{ el = active.querySelector(p.selector) || document.querySelector(p.selector); }catch(e){}
+        if(!el) return;
+        var r = el.getBoundingClientRect();
+        var dot = document.createElement('div');
+        dot.className = 'pin'; dot.textContent = p.id;
+        dot.title = '#' + p.id + ' [' + p.tag + '] ' + p.comment;
+        dot.style.left = (r.right - aRect.left - 4) + 'px';
+        dot.style.top  = (r.top   - aRect.top  + 4) + 'px';
+        layer.appendChild(dot);
+      });
+    active.appendChild(layer);
+  }
+  window.renderPins = renderPins;
+
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+  function panelTabs(active){
+    return '<div class="panel-tabs">' +
+      '<button class="tag' + (active==='pins'?' is-on':'') + '" data-panel="pins" type="button">Pins (' + F.pins.length + ')</button>' +
+      '<button class="tag' + (active==='screens'?' is-on':'') + '" data-panel="screens" type="button">Screens</button>' +
+      '<button class="pinlist__del" id="panel-reset" type="button" title="Reset this walkthrough" ' +
+      'style="float:right;border-radius:var(--ds-radius);padding:2px 9px">Reset</button>' +
+      '</div>';
+  }
+  window.__panelTabs = panelTabs;
+
+  function renderPinList(){
+    var box = document.getElementById('pinlist');
+    var html = panelTabs('pins');
+    if(!F.pins.length){
+      html += '<div class="pinlist__empty">No pins yet. Turn on Pin mode, then click anything ' +
+              'that’s wrong, missing, or should change.</div>';
+    }
+    F.pins.forEach(function(p){
+      html += '<div class="pinlist__item" data-jump="' + esc(p.screen) + '">' +
+        '<button class="pinlist__del" data-del="' + p.id + '" type="button" ' +
+        'title="Delete this pin">&times;</button>' +
+        '<span class="pinlist__n">' + p.id + '</span><strong>' + esc(p.tag) + '</strong> — ' +
+        (p.comment ? esc(p.comment) : '<em>no comment</em>') +
+        '<div class="pinlist__meta">' + esc(p.screenTitle || p.screen) +
+        (p.story ? ' · story ' + esc(p.story) : '') +
+        (p.trail ? '<br>' + esc(p.trail) : '') +
+        '</div></div>';
+    });
+    if(F.pins.length){
+      html += '<button class="ds-btn ds-btn--primary" id="pin-copy2" type="button" ' +
+              'style="margin-top:14px;width:100%">&#128203; Copy feedback for Claude</button>';
+    }
+    box.innerHTML = html;
+    var pb = document.getElementById('btn-pins');
+    if(pb) pb.textContent = 'Pins (' + F.pins.length + ')';
+  }
+  window.renderPinList = renderPinList;
+
+  /* ---- copy: clipboard, with a visible paste sheet as the fallback ---- */
+  window.copyHandoff = function(){
+    var text = window.buildHandoff();
+    var btn = document.getElementById('btn-copy');
+    function ok(){
+      if(!btn) return;
+      btn.setAttribute('data-copied','1');
+      btn.innerHTML = '✓ <span class="lbl">Copied — paste it in the session</span>';
+      setTimeout(refreshCopyBtn, 4000);
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(ok, function(){ showHandoff(text); });
+    } else {
+      showHandoff(text);
+    }
+    return text;
+  };
+
+  function showHandoff(text){
+    document.getElementById('handoff-text').value = text;
+    document.getElementById('handoff').classList.add('is-open');
+    var ta = document.getElementById('handoff-text');
+    ta.focus(); ta.select();
+  }
+
+  /* pin mode: capture-phase so the wireframe's own handlers never fire */
+  document.addEventListener('click', function(e){
+    if(!document.body.classList.contains('pinning')) return;
+    if(e.target.closest('.drawer,.pinlist,#fidelity-bar,.pin,.goal,.handoff')) return;
+    e.preventDefault(); e.stopPropagation();
+    pending = e.target;
+    Array.prototype.forEach.call(document.querySelectorAll('.pin-target'), function(el){
+      el.classList.remove('pin-target');
+    });
+    pending.classList.add('pin-target');
+    document.getElementById('drawer-ctx').textContent =
+      'Pin on: ' + (pending.innerText || pending.tagName).trim().slice(0,50);
+    document.getElementById('drawer-path').textContent = window.trailFor(pending) || window.selectorFor(pending);
+    document.getElementById('drawer-comment').value = '';
+    chosenTag = 'wrong'; renderTags();
+    document.getElementById('drawer').classList.add('is-open');
+    document.getElementById('drawer-comment').focus();
+  }, true);
+
+  function renderTags(){
+    document.getElementById('drawer-tags').innerHTML = TAGS.map(function(t){
+      return '<button class="tag' + (t===chosenTag?' is-on':'') + '" data-tag="' + t + '" type="button">' + t + '</button>';
+    }).join('');
+  }
+
+  function closeDrawer(){
+    document.getElementById('drawer').classList.remove('is-open');
+    if(pending) pending.classList.remove('pin-target');
+    pending = null;
+  }
+
+  document.addEventListener('click', function(e){
+    var t = e.target.closest('[data-tag]');
+    if(t){ chosenTag = t.dataset.tag; renderTags(); return; }
+    if(e.target.id === 'drawer-cancel'){ closeDrawer(); return; }
+    if(e.target.id === 'drawer-save'){
+      if(pending) window.addPin(pending, chosenTag, document.getElementById('drawer-comment').value);
+      closeDrawer(); return;
+    }
+    var del = e.target.closest('[data-del]');
+    if(del){
+      e.stopPropagation();
+      var id = Number(del.dataset.del);
+      F.pins = F.pins.filter(function(p){ return p.id !== id; });
+      save(); renderPins(); renderPinList(); refreshCopyBtn();
+      document.dispatchEvent(new CustomEvent('fidelity:pin', {detail:null}));
+      return;
+    }
+    if(e.target.id === 'btn-copy' || e.target.id === 'pin-copy2' ||
+       (e.target.closest && e.target.closest('#btn-copy'))){
+      window.copyHandoff(); return;
+    }
+    if(e.target.id === 'handoff-close'){
+      document.getElementById('handoff').classList.remove('is-open'); return;
+    }
+    if(e.target.id === 'handoff-select'){
+      var ta = document.getElementById('handoff-text'); ta.focus(); ta.select(); return;
+    }
+    var jump = e.target.closest('[data-jump]');
+    if(jump && !document.body.classList.contains('pinning')){ window.showScreen(jump.dataset.jump); }
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
+      closeDrawer();
+      document.getElementById('handoff').classList.remove('is-open');
+    }
+    /* Cmd/Ctrl+Enter saves the note without reaching for the mouse */
+    if((e.metaKey || e.ctrlKey) && e.key === 'Enter' &&
+       document.getElementById('drawer').classList.contains('is-open')){
+      document.getElementById('drawer-save').click();
+    }
+  });
+  document.addEventListener('fidelity:screen', function(){ renderPins(); });
+  window.addEventListener('resize', renderPins);
+
+  load(); renderTags(); renderPins(); renderPinList(); refreshCopyBtn();
+})();
+</script>
+
+<script>
+/* ---- story bar ---- */
+(function(){
+  var F = window.__fidelity;
+
+  F.stories.forEach(function(s){ if(!s.state) s.state = 'not-walked'; s.active = false; });
+
+  function renderChips(){
+    document.getElementById('story-chips').innerHTML = F.stories.map(function(s){
+      return '<button class="story-chip' + (s.active?' is-active':'') + '" data-story-id="' + s.id +
+             '" data-state="' + s.state + '" type="button">' + s.id + '. ' + s.title + '</button>';
+    }).join(' ');
+    document.getElementById('btn-pins').textContent = 'Pins (' + F.pins.length + ')';
+  }
+
+  function clearPath(){
+    Array.prototype.forEach.call(document.querySelectorAll('.is-on-path'), function(el){
+      el.classList.remove('is-on-path');
+    });
+  }
+
+  window.selectStory = function(id){
+    var story = F.stories.filter(function(s){ return String(s.id) === String(id); })[0];
+    if(!story) return null;
+    F.stories.forEach(function(s){ s.active = (s === story); });
+    clearPath();
+    if(story.screens && story.screens.length) window.showScreen(story.screens[0]);
+    Array.prototype.forEach.call(document.querySelectorAll('[data-story]'), function(el){
+      if(el.dataset.story.split(/\s+/).indexOf(String(story.id)) !== -1) el.classList.add('is-on-path');
+    });
+    var g = document.getElementById('goal');
+    g.textContent = 'Story ' + story.id + ' — ' + story.goal;
+    g.style.display = 'block';
+    document.body.style.paddingTop = 'calc(var(--bar-h) + ' + g.offsetHeight + 'px)';
+    renderChips();
+    return story;
+  };
+
+  window.markStory = function(id, state){
+    var story = F.stories.filter(function(s){ return String(s.id) === String(id); })[0];
+    if(!story) return null;
+    story.state = state;
+    if(window.__fidelitySave) window.__fidelitySave();
+    renderChips();
+    return story;
+  };
+
+  document.addEventListener('click', function(e){
+    var inBar = !!e.target.closest('#fidelity-bar');
+    if(document.body.classList.contains('pinning') && !inBar) return;
+    var chip = e.target.closest('[data-story-id]');
+    if(chip){ window.selectStory(chip.dataset.storyId); return; }
+    if(e.target.id === 'btn-pin'){
+      var on = document.body.classList.toggle('pinning');
+      e.target.classList.toggle('is-on', on);
+      return;
+    }
+    if(e.target.id === 'btn-pins'){
+      document.getElementById('pinlist').classList.toggle('is-open');
+      window.renderPinList(); return;
+    }
+    var tab = e.target.closest('[data-panel]');
+    if(tab){
+      var box = document.getElementById('pinlist');
+      box.classList.add('is-open');
+      if(tab.dataset.panel === 'pins'){ window.renderPinList(); }
+      else {
+        box.innerHTML = window.__panelTabs('screens') +
+          F.screens.map(function(s){
+            return '<div class="pinlist__item" data-jump="' + s.id + '">' + s.title +
+                   (s.id === document.body.dataset.screen ? ' <em>(here)</em>' : '') + '</div>';
+          }).join('');
+      }
+      return;
+    }
+    if(e.target.id === 'panel-reset'){
+      var n = F.pins.length;
+      if(n && !window.confirm('Discard ' + n + ' pin' + (n===1?'':'s') + ' and reset every story to not-walked?')) return;
+      F.pins.length = 0;
+      F.nextId = 1;
+      F.stories.forEach(function(s){ s.state = 'not-walked'; });
+      if(window.__fidelitySave) window.__fidelitySave();
+      window.renderPins(); window.renderPinList();
+      if(window.__refreshCopyBtn) window.__refreshCopyBtn();
+      renderChips();
+      if(F.stories.length) window.selectStory(F.stories[0].id);
+      return;
+    }
+    if(e.target.id === 'btn-done'){
+      var active = F.stories.filter(function(s){ return s.active; })[0];
+      if(!active) return;
+      var has = F.pins.some(function(p){ return String(p.story) === String(active.id); });
+      window.markStory(active.id, has ? 'findings' : 'walked');
+      return;
+    }
+  });
+
+  document.addEventListener('fidelity:pin', function(){ renderChips(); });
+  renderChips();
+  if(F.stories.length) window.selectStory(F.stories[0].id);
+})();
+</script>
+</body>
+</html>
