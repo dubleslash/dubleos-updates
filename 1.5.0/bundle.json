@@ -1,0 +1,80 @@
+{
+  "version": "1.5.0",
+  "kind": "minor",
+  "base": "1.4.0",
+  "intents": [
+    {
+      "id": "v1.5.0-getting-started-plan",
+      "type": "skill-enhance",
+      "targets": [
+        "dubleslash-os-setup"
+      ],
+      "intent": "Onboarding stays minimal — it gathers only what's needed to set up the OS, then writes the user's own Getting Started plan and gets out of the way. A new final stage writes 00-09-system/05-getting-started.md from the interview answers (registered in 00-index.md): a one-screen, personal checklist Claude works through WITH the user across their first sessions, one item at a time, any pace — teach me one fact (the first memory win), connect your tools (the ones they actually named — official per-tool connections, technically MCP servers, the plain word 'connections' unless they talk tech first; approval screens walked in plain words, verified with a real read, outcome recorded in 02-identity.md under a '**Connections.**' entry created if absent), add the recommended toolkit (the curated skill packs from 09-skills — no longer installed during onboarding), give existing work a home (migrate), set up private online backup, and do one real task with example prompts from their own clients. Anything that used to add onboarding friction — toolkit installs, migration, backup, first win, graduation cards — now lives in the plan instead. The close changes to: start a new conversation and ask 'what do you know about me?' — I'll pick up the plan from there.",
+      "apply": "Restructure the skill: welcome loses the toolkit install; the build-out stage loses the migration offer and backup question; the first-win and graduation stages (including the 'Using your OS' card and the 'What you can ask me for' capabilities card) are DELETED from the skill — their substance lives on only as plan items and in 06-usage-guide, do not keep or relocate the cards themselves; the tools interview question notes that answers shape the plan and connections happen later, never during onboarding; progress markers become stage 0 / interview / build-out / plan. Update the skill's frontmatter description so it no longer promises library installs or a first-win during onboarding. Register 05-getting-started.md in 00-index.md only at the moment the plan file is actually written, never before. For an install that has ALREADY been onboarded, do not create the plan file unprompted — on the next 'update my setup' or 'upgrade my setup', offer to generate the plan from the existing identity (skipping items already done). Preserve the user's customizations.",
+      "verify": "The os-setup skill installs nothing optional during onboarding, ends by writing a personalized 00-09-system/05-getting-started.md checklist that includes tool connections, and closes by pointing at a fresh session."
+    },
+    {
+      "id": "v1.5.0-connections-docs",
+      "type": "doc-refresh",
+      "targets": [
+        "CLAUDE.md",
+        "00-09-system/09-skills.md",
+        "00-09-system/00-index.md"
+      ],
+      "intent": "The OS carries the plan and the connections story outside onboarding. CLAUDE.md gains a 'Getting started' section: if 00-09-system/05-getting-started.md exists with unchecked items, offer the next one in one line after answering what the user actually asked — one item per offer, never a list, never first thing; check items off as they complete; all done or the user says drop it, mark complete and stop offering. CLAUDE.md also gains a short 'Tool connections' section: 02-identity.md § Connections lists which of the user's tools Claude is plugged into; when a task would obviously be easier through a tool they use but haven't connected (they paste a Figma link, mention a doc or calendar), offer the connection once, in one line, after answering what they actually asked — guide the approval screens on a yes; 'connect my tools' works any time; never nag. 09-skills.md gains a 'Connections — plug Claude into your tools' section distinguishing skills (how Claude works) from connections (what Claude can reach), naming the mechanism (official per-tool add-ons, technically 'MCP servers', approved one by one), noting the Getting Started plan offers them, and extending the vetting rule: only official connections from the tool's maker or Anthropic's own directory, because a connection can read whatever it is granted. 09-skills.md's curated-toolkit section now says the toolkit is offered as a plan item, not installed during onboarding.",
+      "apply": "Add both CLAUDE.md sections near the update/housekeeping sections. Add the 09-skills.md connections section between the curated-toolkit table and 'Adding a skill', and adjust the toolkit section's install-timing wording; also update the installed-skills table's dubleslash-os-setup row so it no longer claims a toolkit install happens at onboarding. In 00-index.md, extend the 09-skills line to mention connections. Never edit the user's 02-identity.md from this update — its § Connections entry is created when connections actually happen.",
+      "verify": "CLAUDE.md describes both the one-item-at-a-time getting-started offer and the once-and-only-when-useful connection offer; 09-skills.md explains connections, the official-source rule, and the toolkit as a plan item; 00-index.md mentions connections on its skills-registry line."
+    },
+    {
+      "id": "v1.5.0-memory-budgets-and-decision-log",
+      "type": "doc-refresh",
+      "targets": [
+        "00-09-system/03-conventions.md"
+      ],
+      "intent": "Two additions that keep every session's auto-loaded context flat as the OS grows. (1) Auto-loaded files carry current truth only: in CLAUDE.md, 02-identity, 03-conventions and 01-hot, a superseded dated line relocates to 00-09-system/11-decision-log.md at sync time — never deleted, just moved out of the every-session payload; elsewhere history stays inline. (2) Context budgets, measured by memory-sync every run: CLAUDE.md 8,000 characters, 02-identity 5,500, 03-conventions 7,500, 01-hot body 2,500, each brief's '## Now' 1,200 — over budget is a finding, fixed by tightening prose or relocating history, never by dropping a live warning or deleting provenance. Also a 'Build pipeline' section for visible work: the routing test ('will a human ever see a screen this creates or changes?') sends UI work through dubleslash-fidelity-gate before building and dubleslash-design-review after — two review moments only, gate passed = contract; and before a multi-session build ships, one review over the whole change, then walk the real result as its user.",
+      "apply": "Extend the existing 'Append, don't silently rewrite' section with the relocation rule, and add 'Context budgets' and 'Build pipeline' as their own sections. Preserve the user's own wording where they have customized; add what is absent.",
+      "verify": "03-conventions.md states the relocation rule with 11-decision-log as the destination, lists the five budgets, and contains the build-pipeline routing test with both review moments and the whole-change-review-then-walk rule."
+    },
+    {
+      "id": "v1.5.0-memory-sync-relocation",
+      "type": "skill-enhance",
+      "targets": [
+        "dubleslash-memory-sync"
+      ],
+      "intent": "memory-sync enforces the new budgets and performs the relocation. Its budget check now measures the whole auto-loaded stack (CLAUDE.md 8,000 / 02-identity 5,500 / 03-conventions 7,500 / 01-hot body 2,500 / each '## Now' 1,200) and reports every run. A new step relocates superseded history: in the auto-loaded files only, a dated line that a later line supersedes moves to 00-09-system/11-decision-log.md — copied whole, provenance intact, plus one line naming what superseded it — then comes out of the auto-loaded file. If 11-decision-log.md does not exist yet, create it first with a short header explaining that auto-loaded files carry current truth only and superseded lines land here, still searchable; also add it to 00-index.md's system-files list when created.",
+      "apply": "Widen the existing budget-check paragraph and insert the relocation step right after the distill step, renumbering later steps. Preserve the user's customizations.",
+      "verify": "The memory-sync skill lists all five budgets and contains a relocation step that creates 11-decision-log.md if absent."
+    },
+    {
+      "id": "v1.5.0-ship-review-habit",
+      "type": "doc-refresh",
+      "targets": [
+        "00-09-system/08-using-claude.md"
+      ],
+      "intent": "A sixth habit: before something ships, review the whole of it — then walk it. When work grew across several sessions or steps, ask for one review of the whole change before it goes out, not just the last step — each step can be individually fine while the seams hide the real problem. Then walk the real thing yourself, as the person it's for: click the actual flow, open the actual file. 'Each part is correct' and 'it works' are different claims, and only the walk tests the second one.",
+      "apply": "Add as a new numbered habit section before the Links footer, in the note's existing voice.",
+      "verify": "08-using-claude.md contains a habit about whole-change review before shipping and personally walking the real result."
+    },
+    {
+      "id": "v1.5.0-bottom-line-refinements",
+      "type": "doc-refresh",
+      "targets": [
+        "CLAUDE.md"
+      ],
+      "intent": "Two rules that keep the Bottom Line block from becoming noise. (1) A DECIDE is stated in full exactly once — in the turn that raises it; while it stays open in later turns it collapses to ONE line under OPEN, restated in full only if new information changes the question or the recommendation. (2) Status-only turns get a minimal block — Done + NEXT only, never a re-print of standing decisions.",
+      "apply": "Add both as rules in the existing Bottom Line rules list. If the user deleted the Bottom Line section entirely (the section says they may), skip this intent and say so in the receipt.",
+      "verify": "The Bottom Line rules include the stated-once rule and the minimal status-only block, or the section is absent by the user's choice and the receipt says so."
+    },
+    {
+      "id": "v1.5.0-capture-harness-filter",
+      "type": "doc-refresh",
+      "targets": [
+        ".claude/hooks/capture.mjs"
+      ],
+      "intent": "The capture hook must not file machine text as the user's words. In Claude Code transcripts, harness-injected text (task notifications, command output, reminders) arrives on user-role lines exactly like the human's own messages; measured on real transcripts, the overwhelming majority of user-role lines matching the capture heuristic were injected, not typed. Three precise changes: (a) skip any transcript line whose parsed object is null or has isMeta true; (b) skip any user-role line whose content opens with a harness envelope tag — add a case-insensitive regex constant that matches when the content, after optional leading whitespace, begins with '<' or '</' followed immediately by one of these tag names: task-notification, command-name, command-message, command-args, local-command-stdout, local-command-caveat, system-reminder, scheduled-task, session-start-hook, or hook- followed by letters (a bare tag name without the angle bracket must NOT match — real user text may start with those words); drop user-role lines that match; (c) parsing the hook's stdin payload must tolerate a literal null — coerce a null parse result to an empty object so the hook exits 0 instead of crashing.",
+      "apply": "Apply as minimal, surgical edits to the existing code — add the constant and the three guards without restructuring anything else. After editing, confirm the file still parses (for example: node --check .claude/hooks/capture.mjs).",
+      "verify": "Feeding the hook a transcript where the only SIGNAL-matching user line sits inside a task-notification envelope appends nothing to the inbox; a genuine user line still captures; echoing the literal string null into the hook exits 0 with no stack trace."
+    }
+  ],
+  "sig": "Cd7kUNHEMPH7hgnom6xVEGZydODh3n/ZHrvaWd9zhipwtrhkKT9d2XZqg7XZ4iv+NyCe6y4l4Gv+RVGPo4RKCw=="
+}
